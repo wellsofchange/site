@@ -1,0 +1,18 @@
+# GitHub Pages Configuration
+
+theme: jekyll-theme-minimal
+baseurl: "/"
+url: "https://wellsofchange.github.io"
+title: "Wells of Change"
+description: "Changing lifes, one well at a time."
+
+# Build settings
+markdown: kramdown
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - README.md
+  - wellsofchange-site.code-workspace
+  - "*.puml"
