@@ -1,11 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wells of Change</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Wells of Change</title>
+        <!-- Materialize CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+        <!-- Material Icons -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <style>
+                body {
+                        display: flex;
+                        min-height: 100vh;
+                        flex-direction: column;
+                }
+                main {
+                        flex: 1 0 auto;
+                }
+                .hero {
+                        background: linear-gradient(135deg, #42a5f5 0%, #478ed1 100%);
+                        color: white;
+                        padding: 60px 0 40px 0;
+                        text-align: center;
+                }
+        </style>
 </head>
 <body>
-    
+        <!-- Navbar -->
+        <nav class="blue lighten-1">
+                <div class="nav-wrapper container">
+                        <a href="#" class="brand-logo" id="title">Wells of Change</a>
+                        <ul class="right">
+                                <li><a href="#about" id="nav_about">About</a></li>
+                                <li><a href="#contact" id="nav_contact">Contact</a></li>
+                                                                                <li>
+                                                                                          <a href="#" onclick="changeLang('en')" title="English">🇬🇧</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                          <a href="#" onclick="changeLang('pt-BR')" title="Português (Brasil)">🇧🇷</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                          <a href="#" onclick="changeLang('fr')" title="Français">🇫🇷</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                          <a href="#" onclick="changeLang('es')" title="Español">🇪🇸</a>
+                                                                                </li>
+                        </ul>
+                </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero">
+                <h1 id="hero_title">Welcome to Wells of Change</h1>
+                <p id="hero_subtitle">Empowering communities for a better future.</p>
+                <a class="btn-large waves-effect waves-light orange" href="#about" id="hero_cta">Learn More</a>
+        </div>
+
+        <main class="container">
+                <!-- About Section -->
+                <section id="about" class="section">
+                        <h2 id="about_title">About Us</h2>
+                        <p id="about_text">We are dedicated to making a positive impact through sustainable projects and community engagement.</p>
+                </section>
+                <!-- Contact Section -->
+                <section id="contact" class="section">
+                        <h2 id="contact_title">Contact</h2>
+                        <p id="contact_text">Reach out to us for more information or to get involved.</p>
+                        <a class="btn blue" href="mailto:info@wellsofchange.org" id="contact_button">Email Us</a>
+                </section>
+        </main>
+
+        <footer class="page-footer blue lighten-1">
+                <div class="container">
+                        <div class="center-align">
+                                © 2025 Wells of Change
+                        </div>
+                </div>
+        </footer>
+
+        <!-- Materialize JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+                        <!-- i18next and backend plugin -->
+                        <script src="https://unpkg.com/i18next@23.6.1/dist/umd/i18next.min.js"></script>
+                        <script src="https://unpkg.com/i18next-http-backend@2.3.1/i18nextHttpBackend.min.js"></script>
+                        <script>
+                                i18next
+                                        .use(i18nextHttpBackend)
+                                        .init({
+                                                lng: 'en',
+                                                fallbackLng: 'en',
+                                                debug: false,
+                                                backend: {
+                                                        loadPath: 'locales/{{lng}}/translation.json'
+                                                },
+                                        }, function(err, t) {
+                                                updateContent();
+                                        });
+
+                                function updateContent() {
+                                        document.getElementById('title').textContent = i18next.t('title');
+                                        document.getElementById('nav_about').textContent = i18next.t('nav_about');
+                                        document.getElementById('nav_contact').textContent = i18next.t('nav_contact');
+                                        document.getElementById('hero_title').textContent = i18next.t('hero_title');
+                                        document.getElementById('hero_subtitle').textContent = i18next.t('hero_subtitle');
+                                        document.getElementById('hero_cta').textContent = i18next.t('hero_cta');
+                                        document.getElementById('about_title').textContent = i18next.t('about_title');
+                                        document.getElementById('about_text').textContent = i18next.t('about_text');
+                                        document.getElementById('contact_title').textContent = i18next.t('contact_title');
+                                        document.getElementById('contact_text').textContent = i18next.t('contact_text');
+                                        document.getElementById('contact_button').textContent = i18next.t('contact_button');
+                                }
+
+                                function changeLang(lng) {
+                                        i18next.changeLanguage(lng, updateContent);
+                                }
+                        </script>
 </body>
 </html>
