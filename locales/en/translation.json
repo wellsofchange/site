@@ -1,13 +1,49 @@
 {
   "title": "Wells of Change",
-  "nav_about": "About",
-  "nav_contact": "Contact",
-  "hero_title": "Welcome to Wells of Change",
-  "hero_subtitle": "Empowering communities for a better future.",
-  "hero_cta": "Learn More",
+  "hero_title": "Wells of Change",
+  "hero_subtitle": "Bringing clean water to communities in need, one well at a time",
+  "hero_cta": "Be part of the change",
+
+  "stats_wells": "120+",
+  "stats_wells_label": "Wells Built",
+  "stats_lives": "30,000+",
+  "stats_lives_label": "Lives Improved",
+  "stats_countries": "15",
+  "stats_countries_label": "Countries Reached",
+  "stats_funds": "95%",
+  "stats_funds_label": "Funds to Projects",
+
   "about_title": "About Us",
-  "about_text": "We are dedicated to making a positive impact through sustainable projects and community engagement.",
-  "contact_title": "Contact",
-  "contact_text": "Reach out to us for more information or to get involved.",
-  "contact_button": "Email Us"
+  "about_subtitle": "Working toward a world where everyone has access to clean water",
+  "about_text": "Wells of Change is dedicated to addressing the global water crisis by building sustainable water projects in communities that lack access to clean water. Since 2018, we have partnered with local organizations and communities to implement long-lasting solutions that improve health, education, and economic opportunities.",
+  "about_text_2": "Our approach focuses on community involvement, sustainability, and education to ensure that each project continues to provide clean water for generations to come. We believe that access to clean water is a fundamental human right and the foundation for breaking the cycle of poverty.",
+
+  "projects_title": "Our Projects",
+  "projects_subtitle": "See how we're making a difference around the world",
+  "project_1_title": "Well Construction",
+  "project_1_desc": "We build both shallow and deep wells depending on local conditions and water tables.",
+  "project_2_title": "Water Filtration",
+  "project_2_desc": "Installing filtration systems in communities with contaminated water sources.",
+  "project_3_title": "Hygiene Education",
+  "project_3_desc": "Teaching proper sanitation and hygiene practices to maximize health benefits.",
+  "project_button": "Learn More",
+
+  "impact_title": "Our Impact",
+  "impact_subtitle": "See how access to clean water transforms communities",
+  "impact_1_title": "Health Improvement",
+  "impact_1_text": "Communities with access to clean water see up to 80% reduction in waterborne diseases, leading to fewer sick days and lower healthcare costs.",
+  "impact_2_title": "Education Access",
+  "impact_2_text": "When children don't have to spend hours collecting water, school attendance increases by 40%, especially among girls who are often responsible for water collection.",
+  "impact_3_title": "Economic Growth",
+  "impact_3_text": "Access to clean water saves time and improves health, allowing community members to focus on income-generating activities and education.",
+
+  "contact_title": "Contact Us",
+  "contact_text": "Reach out to us for more information or to get involved",
+  "contact_description": "Interested in learning more about our work or how you can support our mission? We'd love to hear from you. Contact us by email or follow us on social media for updates.",
+  "contact_button": "Email Us",
+
+  "footer_tagline": "Bringing clean water to communities in need, one well at a time.",
+  "footer_links": "Quick Links",
+  "footer_connect": "Connect With Us",
+  "footer_copyright": "© 2025 Wells of Change. All rights reserved."
 }

@@ -1,119 +1,419 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Wells of Change</title>
-        <!-- Materialize CSS -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-        <!-- Material Icons -->
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <style>
-                body {
-                        display: flex;
-                        min-height: 100vh;
-                        flex-direction: column;
-                }
-                main {
-                        flex: 1 0 auto;
-                }
-                .hero {
-                        background: linear-gradient(135deg, #42a5f5 0%, #478ed1 100%);
-                        color: white;
-                        padding: 60px 0 40px 0;
-                        text-align: center;
-                }
-        </style>
-</head>
-<body>
-        <!-- Navbar -->
-        <nav class="blue lighten-1">
-                <div class="nav-wrapper container">
-                        <a href="#" class="brand-logo" id="title">Wells of Change</a>
-                        <ul class="right">
-                                <li><a href="#about" id="nav_about">About</a></li>
-                                <li><a href="#contact" id="nav_contact">Contact</a></li>
-                                                                                <li>
-                                                                                          <a href="#" onclick="changeLang('en'); event.preventDefault();" title="English">🇬🇧</a>
-                                                                                </li>
-                                                                                <li>
-                                                                                          <a href="#" onclick="changeLang('pt-BR'); event.preventDefault();" title="Português (Brasil)">🇧🇷</a>
-                                                                                </li>
-                                                                                <li>
-                                                                                          <a href="#" onclick="changeLang('fr'); event.preventDefault();" title="Français">🇫🇷</a>
-                                                                                </li>
-                                                                                <li>
-                                                                                          <a href="#" onclick="changeLang('es'); event.preventDefault();" title="Español">🇪🇸</a>
-                                                                                </li>
-                        </ul>
-                </div>
-        </nav>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Wells of Change</title>
+    <!-- MDC Web CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Material Theme CSS -->
+    <link rel="stylesheet" href="css/material-theme/light.css">
+    <style>
+        /* Language FAB styling */
+        .language-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
 
+        .language-menu {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 1rem;
+            min-width: 200px;
+            transform: scale(0);
+            transform-origin: bottom right;
+            transition: transform 0.2s ease-out;
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 16px;
+            box-shadow: var(--md-sys-elevation-level3);
+            padding: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .language-menu.open {
+            transform: scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .language-selector {
+            width: 100%;
+            justify-content: flex-start;
+            margin: 0.25rem 0;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .language-selector .mdc-button__icon {
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+
+        .fab-icon {
+            margin-right: 12px;
+        }
+
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            .language-fab {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        /* Touch optimization for buttons */
+        .mdc-button, .mdc-icon-button, a {
+            touch-action: manipulation;
+        }
+
+        @media (max-width: 600px) {
+            /* Make image loading more efficient on mobile */
+            .card-image {
+                background-size: cover;
+                background-position: center;
+            }
+
+            /* Improve tap targets */
+            .mdc-button {
+                min-height: 48px;
+            }
+
+            /* Language buttons full width on small screens */
+            .language-selector {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body class="mdc-typography">
+    <div class="">
         <!-- Hero Section -->
         <div class="hero">
-                <h1 id="hero_title">Welcome to Wells of Change</h1>
-                <p id="hero_subtitle">Empowering communities for a better future.</p>
-                <a class="btn-large waves-effect waves-light orange" href="#about" id="hero_cta">Learn More</a>
+            <div class="hero-content">
+                <h1 id="hero_title" class="fade-in">Wells of Change</h1>
+                <p id="hero_subtitle" class="fade-in">Changing Lives, One Well at a Time</p>
+                <button class="mdc-button mdc-button--raised fade-in" id="hero_cta">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="mdc-button__label">Be part of the change</span>
+                </button>
+            </div>
         </div>
 
-        <main class="container">
-                <!-- About Section -->
-                <section id="about" class="section">
+        <!-- Language FAB -->
+        <div class="language-fab">
+            <button class="mdc-fab mdc-fab--extended language-fab-button">
+                <span class="mdc-fab__ripple"></span>
+                <span class="material-icons fab-icon">language</span>
+                <span class="mdc-fab__label" id="current-language-display">🇺🇸 English</span>
+            </button>
+
+            <div class="language-menu" id="language-menu">
+                <button class="mdc-button language-selector" data-lang="en" data-flag="🇺🇸">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="mdc-button__icon">🇺🇸</span>
+                    <span class="mdc-button__label">English</span>
+                </button>
+                <button class="mdc-button language-selector" data-lang="pt-BR" data-flag="🇧🇷">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="mdc-button__icon">🇧🇷</span>
+                    <span class="mdc-button__label">Português</span>
+                </button>
+                <button class="mdc-button language-selector" data-lang="fr" data-flag="🇫🇷">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="mdc-button__icon">🇫🇷</span>
+                    <span class="mdc-button__label">Français</span>
+                </button>
+                <button class="mdc-button language-selector" data-lang="es" data-flag="🇪🇸">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="mdc-button__icon">🇪🇸</span>
+                    <span class="mdc-button__label">Español</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item stagger-item">
+                        <div class="stat-number" id="stats_wells">120+</div>
+                        <div class="stat-label" id="stats_wells_label">Wells Built</div>
+                    </div>
+                    <div class="stat-item stagger-item">
+                        <div class="stat-number" id="stats_lives">30,000+</div>
+                        <div class="stat-label" id="stats_lives_label">Lives Improved</div>
+                    </div>
+                    <div class="stat-item stagger-item">
+                        <div class="stat-number" id="stats_countries">15</div>
+                        <div class="stat-label" id="stats_countries_label">Countries Reached</div>
+                    </div>
+                    <div class="stat-item stagger-item">
+                        <div class="stat-number" id="stats_funds">95%</div>
+                        <div class="stat-label" id="stats_funds_label">Funds to Projects</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main>
+            <!-- About Section -->
+            <section id="about">
+                <div class="container">
+                    <div class="section-heading">
                         <h2 id="about_title">About Us</h2>
-                        <p id="about_text">We are dedicated to making a positive impact through sustainable projects and community engagement.</p>
-                </section>
-                <!-- Contact Section -->
-                <section id="contact" class="section">
-                        <h2 id="contact_title">Contact</h2>
-                        <p id="contact_text">Reach out to us for more information or to get involved.</p>
-                        <a class="btn blue" href="mailto:info@wellsofchange.org" id="contact_button">Email Us</a>
-                </section>
+                        <p id="about_subtitle">Working toward a world where everyone has access to clean water</p>
+                    </div>
+
+                    <div class="mdc-card">
+                        <div class="mdc-card__content">
+                            <p id="about_text" class="mdc-typography--body1">
+                                Wells of Change is dedicated to addressing the global water crisis by building sustainable water projects in communities that lack access to clean water. Since 2018, we have partnered with local organizations and communities to implement long-lasting solutions that improve health, education, and economic opportunities.
+                            </p>
+                            <p id="about_text_2" class="mdc-typography--body1">
+                                Our approach focuses on community involvement, sustainability, and education to ensure that each project continues to provide clean water for generations to come. We believe that access to clean water is a fundamental human right and the foundation for breaking the cycle of poverty.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="projects" style="background-color: var(--md-sys-color-surface-container-lowest);">
+                <div class="container">
+                    <div class="section-heading">
+                        <h2 id="projects_title">Our Projects</h2>
+                        <p id="projects_subtitle">See how we're making a difference around the world</p>
+                    </div>
+
+                    <div class="projects-grid">
+                        <!-- Project 1 -->
+                        <div class="mdc-card card-with-image">
+                            <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1541675154750-0444c7d51e8e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                            <div class="mdc-card__content">
+                                <h3 class="mdc-typography--headline6" id="project_1_title">Well Construction</h3>
+                                <p class="mdc-typography--body2" id="project_1_desc">We build both shallow and deep wells depending on local conditions and water tables.</p>
+                            </div>
+                            <div class="mdc-card__actions">
+                                <button class="mdc-button mdc-button--outlined">
+                                    <span class="mdc-button__ripple"></span>
+                                    <span class="mdc-button__label" id="project_button_1">Learn More</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Project 2 -->
+                        <div class="mdc-card card-with-image">
+                            <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1592998674438-58e3338578dc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                            <div class="mdc-card__content">
+                                <h3 class="mdc-typography--headline6" id="project_2_title">Water Filtration</h3>
+                                <p class="mdc-typography--body2" id="project_2_desc">Installing filtration systems in communities with contaminated water sources.</p>
+                            </div>
+                            <div class="mdc-card__actions">
+                                <button class="mdc-button mdc-button--outlined">
+                                    <span class="mdc-button__ripple"></span>
+                                    <span class="mdc-button__label" id="project_button_2">Learn More</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Project 3 -->
+                        <div class="mdc-card card-with-image">
+                            <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1617963131816-e092b6ccac05?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                            <div class="mdc-card__content">
+                                <h3 class="mdc-typography--headline6" id="project_3_title">Hygiene Education</h3>
+                                <p class="mdc-typography--body2" id="project_3_desc">Teaching proper sanitation and hygiene practices to maximize health benefits.</p>
+                            </div>
+                            <div class="mdc-card__actions">
+                                <button class="mdc-button mdc-button--outlined">
+                                    <span class="mdc-button__ripple"></span>
+                                    <span class="mdc-button__label" id="project_button_3">Learn More</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Impact Section -->
+            <section id="impact">
+                <div class="container">
+                    <div class="section-heading">
+                        <h2 id="impact_title">Our Impact</h2>
+                        <p id="impact_subtitle">See how access to clean water transforms communities</p>
+                    </div>
+
+                    <div class="impact-box">
+                        <h3 class="mdc-typography--headline5" id="impact_1_title">Health Improvement</h3>
+                        <p class="mdc-typography--body1" id="impact_1_text">Communities with access to clean water see up to 80% reduction in waterborne diseases, leading to fewer sick days and lower healthcare costs.</p>
+                    </div>
+
+                    <div class="impact-box">
+                        <h3 class="mdc-typography--headline5" id="impact_2_title">Education Access</h3>
+                        <p class="mdc-typography--body1" id="impact_2_text">When children don't have to spend hours collecting water, school attendance increases by 40%, especially among girls who are often responsible for water collection.</p>
+                    </div>
+
+                    <div class="impact-box">
+                        <h3 class="mdc-typography--headline5" id="impact_3_title">Economic Growth</h3>
+                        <p class="mdc-typography--body1" id="impact_3_text">Access to clean water saves time and improves health, allowing community members to focus on income-generating activities and education.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section id="contact" style="background-color: var(--md-sys-color-surface-container-lowest);">
+                <div class="container">
+                    <div class="section-heading">
+                        <h2 id="contact_title">Contact Us</h2>
+                        <p id="contact_text">Reach out to us for more information or to get involved</p>
+                    </div>
+
+                    <div class="mdc-card">
+                        <div class="mdc-card__content">
+                            <p class="mdc-typography--body1" id="contact_description">
+                                Interested in learning more about our work or how you can support our mission? We'd love to hear from you. Contact us by email or follow us on social media for updates.
+                            </p>
+                            <div class="mdc-card__actions">
+                                <button class="mdc-button mdc-button--raised" id="contact_button">
+                                    <span class="mdc-button__ripple"></span>
+                                    <span class="material-icons" style="margin-right: 8px;">email</span>
+                                    <span class="mdc-button__label">Email Us</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
-        <footer class="page-footer blue lighten-1">
-                <div class="container">
-                        <div class="center-align">
-                                © 2025 Wells of Change
+        <footer>
+            <div class="container">
+                <div class="footer-grid">
+                    <div>
+                        <h3 class="mdc-typography--headline6" id="title_footer">Wells of Change</h3>
+                        <p class="mdc-typography--body2" id="footer_tagline">Bringing clean water to communities in need, one well at a time.</p>
+                    </div>
+                    <div>
+                        <h3 class="mdc-typography--subtitle2" id="footer_links">Quick Links</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li><a href="#about" style="color: inherit; text-decoration: none; display: block; margin-bottom: 8px;" id="footer_about">About</a></li>
+                            <li><a href="#projects" style="color: inherit; text-decoration: none; display: block; margin-bottom: 8px;" id="footer_projects">Projects</a></li>
+                            <li><a href="#impact" style="color: inherit; text-decoration: none; display: block; margin-bottom: 8px;" id="footer_impact">Impact</a></li>
+                            <li><a href="#contact" style="color: inherit; text-decoration: none; display: block;" id="footer_contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="mdc-typography--subtitle2" id="footer_connect">Connect With Us</h3>
+                        <div style="display: flex; gap: 16px; margin-top: 16px;">
+                            <span class="material-icons">facebook</span>
+                            <span class="material-icons">twitter</span>
+                            <span class="material-icons">instagram</span>
+                            <span class="material-icons">email</span>
                         </div>
+                    </div>
                 </div>
+                <div class="footer-copyright">
+                    <p class="mdc-typography--body2" id="footer_copyright">© 2025 Wells of Change. All rights reserved.</p>
+                </div>
+            </div>
         </footer>
+    </div>
 
-        <!-- Materialize JS -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-                        <!-- i18next and backend plugin -->
-                        <script src="https://unpkg.com/i18next@23.6.1/dist/umd/i18next.min.js"></script>
-                        <script src="https://unpkg.com/i18next-http-backend@2.3.1/i18nextHttpBackend.min.js"></script>
-                        <script>
-                                i18next
-                                        .use(i18nextHttpBackend)
-                                        .init({
-                                                lng: 'en',
-                                                fallbackLng: 'en',
-                                                debug: false,
-                                                backend: {
-                                                        loadPath: 'locales/{{lng}}/translation.json'
-                                                },
-                                        }, function(err, t) {
-                                                updateContent();
-                                        });
+    <!-- MDC Web JS -->
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script>
+        // Initialize MDC components
+        document.querySelectorAll('.mdc-button').forEach(button => {
+            new mdc.ripple.MDCRipple(button);
+        });
 
-                                function updateContent() {
-                                        document.getElementById('title').textContent = i18next.t('title');
-                                        document.getElementById('nav_about').textContent = i18next.t('nav_about');
-                                        document.getElementById('nav_contact').textContent = i18next.t('nav_contact');
-                                        document.getElementById('hero_title').textContent = i18next.t('hero_title');
-                                        document.getElementById('hero_subtitle').textContent = i18next.t('hero_subtitle');
-                                        document.getElementById('hero_cta').textContent = i18next.t('hero_cta');
-                                        document.getElementById('about_title').textContent = i18next.t('about_title');
-                                        document.getElementById('about_text').textContent = i18next.t('about_text');
-                                        document.getElementById('contact_title').textContent = i18next.t('contact_title');
-                                        document.getElementById('contact_text').textContent = i18next.t('contact_text');
-                                        document.getElementById('contact_button').textContent = i18next.t('contact_button');
-                                }
+        // Initialize TopAppBar
+        const topAppBarElement = document.querySelector('.mdc-top-app-bar');
+        if (topAppBarElement) {
+            new mdc.topAppBar.MDCTopAppBar(topAppBarElement);
+        }
 
-                                function changeLang(lng) {
-                                        i18next.changeLanguage(lng, updateContent);
-                                }
-                        </script>
+        // Link "Learn More" button to About section
+        document.getElementById('hero_cta').addEventListener('click', function() {
+            document.getElementById('about').scrollIntoView({behavior: 'smooth'});
+        });
+
+        // Setup email button
+        document.getElementById('contact_button').addEventListener('click', function() {
+            window.location.href = "mailto:info@wellsofchange.org";
+        });
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {threshold: 0.1});
+
+        // Observe elements with stagger-item class
+        document.querySelectorAll('.stagger-item').forEach(item => {
+            observer.observe(item);
+        });
+
+        // Language selector event listeners
+        document.querySelectorAll('.language-selector').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const lang = this.getAttribute('data-lang');
+
+                // Remove active state from all buttons
+                document.querySelectorAll('.language-selector').forEach(btn => {
+                    btn.classList.remove('mdc-button--raised');
+                    btn.classList.add('mdc-button--outlined');
+                });
+
+                // Add active state to selected button
+                this.classList.remove('mdc-button--outlined');
+                this.classList.add('mdc-button--raised');
+
+                // Change language
+                changeLang(lang);
+            });
+        });
+
+        // Set initial active state for current language
+        const currentLang = document.querySelector(`.language-selector[data-lang="${i18next.language || 'en'}"]`);
+        if (currentLang) {
+            currentLang.classList.remove('mdc-button--outlined');
+            currentLang.classList.add('mdc-button--raised');
+        }
+
+        // Language FAB toggle
+        const languageFabButton = document.querySelector('.language-fab-button');
+        const languageMenu = document.getElementById('language-menu');
+
+        languageFabButton.addEventListener('click', () => {
+            languageMenu.classList.toggle('open');
+        });
+
+        // Close language menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!languageFabButton.contains(event.target) && !languageMenu.contains(event.target)) {
+                languageMenu.classList.remove('open');
+            }
+        });
+    </script>
+
+    <!-- i18next libraries -->
+    <script src="https://unpkg.com/i18next@23.6.1/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend@2.3.1/i18nextHttpBackend.min.js"></script>
+
+    <!-- Translation script -->
+    <script src="js/translations.js"></script>
 </body>
 </html>
