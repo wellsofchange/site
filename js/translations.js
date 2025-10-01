@@ -131,4 +131,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make changeLang function globally available
     window.changeLang = changeLang;
+
+    // Language FAB toggle
+    const languageFabButton = document.querySelector('.language-fab-button');
+    const languageMenu = document.getElementById('language-menu');
+
+    languageFabButton.addEventListener('click', () => {
+        languageMenu.classList.toggle('open');
+    });
+
+    // Close language menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!languageFabButton.contains(event.target) && !languageMenu.contains(event.target)) {
+            languageMenu.classList.remove('open');
+        }
+    });
+
+    // Language selector event listeners
+    document.querySelectorAll('.language-selector').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const lang = this.getAttribute('data-lang');
+            const flag = this.getAttribute('data-flag');
+
+            // Change language
+            changeLang(lang);
+
+            // Update FAB display
+            document.getElementById('current-language-display').textContent = `${flag} ${this.querySelector('.mdc-button__label').textContent}`;
+
+            // Close the menu
+            languageMenu.classList.remove('open');
+        });
+    });
 });
