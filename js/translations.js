@@ -8,36 +8,75 @@ document.addEventListener('DOMContentLoaded', function() {
         'es': { flag: '🇪🇸', name: 'Español' }
     };
 
-    // Determine if we're on GitHub Pages or local
-    const isGitHubPages = location.hostname.includes('github.io');
+    // Make changeLang function globally available immediately
+    // Create a placeholder function that will be replaced once i18next is loaded
+    window.changeLang = function(lng) {
+        console.log('Translation system not fully loaded yet, will change to', lng, 'when ready');
+        // Store the requested language to apply once i18next is loaded
+        window._pendingLanguage = lng;
+    };
 
-    // Set the base URL for translations based on environment
-    const baseUrl = isGitHubPages ? '/wellsofchange/site' : '';
+    // Setup the language FAB functionality immediately
+    setupLanguageFAB();
 
-    // Initialize i18next
-    i18next
-        .use(i18nextHttpBackend)
-        .init({
-            lng: 'en',
-            fallbackLng: 'en',
-            debug: false,
-            backend: {
-                loadPath: `${baseUrl}/locales/{{lng}}/translation.json`
-            },
-        }, function(err, t) {
-            if (err) {
-                console.error('Error loading translations:', err);
-            }
-            // Make i18next globally available
-            window.i18next = i18next;
-            // Update content with translations
-            updateContent();
-        });
+    // Check if i18next is already loaded
+    function initializeTranslationSystem() {
+        // Wait for i18next to be defined globally
+        if (typeof window.i18next === 'undefined') {
+            console.log('i18next not loaded yet, waiting...');
+            setTimeout(initializeTranslationSystem, 100);
+            return;
+        }
+
+        // Determine if we're on GitHub Pages or local
+        const isGitHubPages = location.hostname.includes('github.io');
+
+        // Set the base URL for translations based on environment
+        const baseUrl = isGitHubPages ? '/wellsofchange/site' : '';
+
+        // Initialize i18next
+        window.i18next
+            .use(i18nextHttpBackend)
+            .init({
+                lng: 'en',
+                fallbackLng: 'en',
+                debug: false,
+                backend: {
+                    loadPath: `${baseUrl}/locales/{{lng}}/translation.json`
+                },
+            }, function(err, t) {
+                if (err) {
+                    console.error('Error loading translations:', err);
+                }
+
+                // Now that i18next is loaded, replace the placeholder changeLang function
+                window.changeLang = function(lng) {
+                    window.i18next.changeLanguage(lng, function(err, t) {
+                        if (err) {
+                            console.error('Error changing language:', err);
+                        }
+                        updateContent();
+                    });
+                };
+
+                // Check if there was a pending language change request
+                if (window._pendingLanguage) {
+                    window.changeLang(window._pendingLanguage);
+                    delete window._pendingLanguage;
+                } else {
+                    // Just update the content with the default language
+                    updateContent();
+                }
+            });
+    }
+
+    // Start the initialization process
+    initializeTranslationSystem();
 
     // Update all content with translations
     function updateContent() {
         try {
-            const currentLang = i18next.language;
+            const currentLang = window.i18next.language;
             const langInfo = languageData[currentLang] || languageData['en'];
 
             // Update FAB display
@@ -45,6 +84,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentLanguageDisplay) {
                 currentLanguageDisplay.textContent = `${langInfo.flag} ${langInfo.name}`;
             }
+
+            // Update active language button visual state
+            updateLanguageButtonState(currentLang);
 
             // Translate all content by ID
             translateElement('title');
@@ -109,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
             translateElement('footer_copyright');
 
             // Update the document title
-            document.title = i18next.t('title');
+            document.title = window.i18next.t('title');
 
         } catch (error) {
             console.error('Error updating content:', error);
@@ -119,73 +161,97 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper function to translate an element by ID
     function translateElement(id) {
         const element = document.getElementById(id);
-        if (element) {
-            element.textContent = i18next.t(id);
+        if (element && window.i18next) {
+            try {
+                element.textContent = window.i18next.t(id);
+            } catch (e) {
+                console.warn(`Could not translate element ${id}:`, e);
+            }
         }
     }
 
     // Helper function to translate a button by ID
     function translateButton(id) {
         const button = document.getElementById(id);
-        if (button) {
+        if (button && window.i18next) {
             const label = button.querySelector('.mdc-button__label');
             if (label) {
-                label.textContent = i18next.t(id);
+                try {
+                    label.textContent = window.i18next.t(id);
+                } catch (e) {
+                    console.warn(`Could not translate button ${id}:`, e);
+                }
             }
         }
     }
-    
-    function changeLang(lng) {
-        i18next.changeLanguage(lng, function(err, t) {
-            if (err) {
-                console.error('Error changing language:', err);
+
+    // Set up the language FAB and event listeners
+    function setupLanguageFAB() {
+        const languageFabButton = document.querySelector('.language-fab-button');
+        const languageMenu = document.getElementById('language-menu');
+
+        // Initialize ripple effect for FAB
+        if (languageFabButton) {
+            new mdc.ripple.MDCRipple(languageFabButton);
+
+            languageFabButton.addEventListener('click', () => {
+                languageMenu.classList.toggle('open');
+            });
+        }
+
+        // Close language menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (languageMenu && languageFabButton && !languageFabButton.contains(event.target) && !languageMenu.contains(event.target)) {
+                languageMenu.classList.remove('open');
             }
-            updateContent();
         });
+
+        // Set up language selector buttons
+        document.querySelectorAll('.language-selector').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                const lang = this.getAttribute('data-lang');
+                const flag = this.getAttribute('data-flag');
+                const name = this.querySelector('.mdc-button__label').textContent;
+
+                // Update FAB display immediately for better UX
+                const currentLanguageDisplay = document.getElementById('current-language-display');
+                if (currentLanguageDisplay) {
+                    currentLanguageDisplay.textContent = `${flag} ${name}`;
+                }
+
+                // Update button state
+                updateLanguageButtonState(lang);
+
+                // Change language
+                window.changeLang(lang);
+
+                // Close menu
+                if (languageMenu) {
+                    languageMenu.classList.remove('open');
+                }
+            });
+        });
+
+        // Set initial active button state
+        updateLanguageButtonState('en');
     }
 
-    // Make changeLang function globally available
-    window.changeLang = changeLang;
+    // Update the visual state of language buttons
+    function updateLanguageButtonState(selectedLang) {
+        document.querySelectorAll('.language-selector').forEach(btn => {
+            const lang = btn.getAttribute('data-lang');
 
-    // Language FAB toggle
-    const languageFabButton = document.querySelector('.language-fab-button');
-    const languageMenu = document.getElementById('language-menu');
+            // Reset all buttons
+            btn.classList.remove('mdc-button--raised');
+            btn.classList.add('mdc-button--outlined');
 
-    languageFabButton.addEventListener('click', () => {
-        languageMenu.classList.toggle('open');
-    });
-
-    // Close language menu when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!languageFabButton.contains(event.target) && !languageMenu.contains(event.target)) {
-            languageMenu.classList.remove('open');
-        }
-    });
-
-    // Language selector event listeners
-    document.querySelectorAll('.language-selector').forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            const lang = this.getAttribute('data-lang');
-            const flag = this.getAttribute('data-flag');
-
-            // Change language
-            changeLang(lang);
-
-            // Update FAB display immediately for better UX
-            document.getElementById('current-language-display').textContent = `${flag} ${this.querySelector('.mdc-button__label').textContent}`;
-
-            // Close the menu
-            languageMenu.classList.remove('open');
+            // Set active state for selected language
+            if (lang === selectedLang) {
+                btn.classList.remove('mdc-button--outlined');
+                btn.classList.add('mdc-button--raised');
+            }
         });
-    });
-
-    // Initialize the active language button based on default language ('en')
-    // (This avoids the i18next reference error by not using it directly)
-    const defaultLanguage = 'en';
-    const initialLangButton = document.querySelector(`.language-selector[data-lang="${defaultLanguage}"]`);
-    if (initialLangButton) {
-        initialLangButton.classList.remove('mdc-button--outlined');
-        initialLangButton.classList.add('mdc-button--raised');
     }
 });
