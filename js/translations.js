@@ -8,13 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
         'es': { flag: '🇪🇸', name: 'Español' }
     };
 
-    // Initialize Material Design menu
-    const menu = new mdc.menu.MDCMenu(document.querySelector('.mdc-menu'));
-    const menuButton = document.querySelector('.language-menu-button');
+    // Determine if we're on GitHub Pages or local
+    const isGitHubPages = location.hostname.includes('github.io');
 
-    menuButton.addEventListener('click', function() {
-        menu.open = !menu.open;
-    });
+    // Set the base URL for translations based on environment
+    const baseUrl = isGitHubPages ? '/wellsofchange/site' : '';
 
     // Initialize i18next
     i18next
@@ -24,107 +22,124 @@ document.addEventListener('DOMContentLoaded', function() {
             fallbackLng: 'en',
             debug: false,
             backend: {
-                loadPath: 'locales/{{lng}}/translation.json'
+                loadPath: `${baseUrl}/locales/{{lng}}/translation.json`
             },
         }, function(err, t) {
+            if (err) {
+                console.error('Error loading translations:', err);
+            }
+            // Make i18next globally available
+            window.i18next = i18next;
+            // Update content with translations
             updateContent();
         });
 
     // Update all content with translations
     function updateContent() {
-        const currentLang = i18next.language;
-        const langInfo = languageData[currentLang] || languageData['en'];
+        try {
+            const currentLang = i18next.language;
+            const langInfo = languageData[currentLang] || languageData['en'];
 
-        // Update FAB display
-        document.getElementById('current-language-display').textContent = `${langInfo.flag} ${langInfo.name}`;
+            // Update FAB display
+            const currentLanguageDisplay = document.getElementById('current-language-display');
+            if (currentLanguageDisplay) {
+                currentLanguageDisplay.textContent = `${langInfo.flag} ${langInfo.name}`;
+            }
 
-        // Close language menu
-        document.getElementById('language-menu').classList.remove('open');
+            // Translate all content by ID
+            translateElement('title');
+            translateElement('title_footer');
+            translateElement('hero_title');
+            translateElement('hero_subtitle');
+            translateButton('hero_cta');
 
-        // Navigation and general elements
-        document.getElementById('title').textContent = i18next.t('title');
-        document.getElementById('title_footer').textContent = i18next.t('title');
+            // Stats section
+            translateElement('stats_wells');
+            translateElement('stats_wells_label');
+            translateElement('stats_lives');
+            translateElement('stats_lives_label');
+            translateElement('stats_countries');
+            translateElement('stats_countries_label');
+            translateElement('stats_funds');
+            translateElement('stats_funds_label');
 
-        // Desktop navigation
-        document.getElementById('nav_about').querySelector('.mdc-button__label').textContent = i18next.t('nav_about');
-        document.getElementById('nav_projects').querySelector('.mdc-button__label').textContent = i18next.t('nav_projects');
-        document.getElementById('nav_impact').querySelector('.mdc-button__label').textContent = i18next.t('nav_impact');
-        document.getElementById('nav_contact').querySelector('.mdc-button__label').textContent = i18next.t('nav_contact');
-        
-        // Mobile navigation
-        if (document.getElementById('mobile_nav_about')) {
-            document.getElementById('mobile_nav_about').querySelector('.mdc-button__label').textContent = i18next.t('nav_about');
-            document.getElementById('mobile_nav_projects').querySelector('.mdc-button__label').textContent = i18next.t('nav_projects');
-            document.getElementById('mobile_nav_impact').querySelector('.mdc-button__label').textContent = i18next.t('nav_impact');
-            document.getElementById('mobile_nav_contact').querySelector('.mdc-button__label').textContent = i18next.t('nav_contact');
+            // About section
+            translateElement('about_title');
+            translateElement('about_subtitle');
+            translateElement('about_text');
+            translateElement('about_text_2');
+
+            // Projects section
+            translateElement('projects_title');
+            translateElement('projects_subtitle');
+            translateElement('project_1_title');
+            translateElement('project_1_desc');
+            translateElement('project_2_title');
+            translateElement('project_2_desc');
+            translateElement('project_3_title');
+            translateElement('project_3_desc');
+            translateElement('project_button_1');
+            translateElement('project_button_2');
+            translateElement('project_button_3');
+
+            // Impact section
+            translateElement('impact_title');
+            translateElement('impact_subtitle');
+            translateElement('impact_1_title');
+            translateElement('impact_1_text');
+            translateElement('impact_2_title');
+            translateElement('impact_2_text');
+            translateElement('impact_3_title');
+            translateElement('impact_3_text');
+
+            // Contact section
+            translateElement('contact_title');
+            translateElement('contact_text');
+            translateElement('contact_description');
+            translateButton('contact_button');
+
+            // Footer
+            translateElement('footer_tagline');
+            translateElement('footer_links');
+            translateElement('footer_about');
+            translateElement('footer_projects');
+            translateElement('footer_impact');
+            translateElement('footer_contact');
+            translateElement('footer_connect');
+            translateElement('footer_copyright');
+
+            // Update the document title
+            document.title = i18next.t('title');
+
+        } catch (error) {
+            console.error('Error updating content:', error);
         }
+    }
 
-        // Hero section
-        document.getElementById('hero_title').textContent = i18next.t('hero_title');
-        document.getElementById('hero_subtitle').textContent = i18next.t('hero_subtitle');
-        document.getElementById('hero_cta').querySelector('.mdc-button__label').textContent = i18next.t('hero_cta');
-        
-        // Stats section
-        document.getElementById('stats_wells').textContent = i18next.t('stats_wells');
-        document.getElementById('stats_wells_label').textContent = i18next.t('stats_wells_label');
-        document.getElementById('stats_lives').textContent = i18next.t('stats_lives');
-        document.getElementById('stats_lives_label').textContent = i18next.t('stats_lives_label');
-        document.getElementById('stats_countries').textContent = i18next.t('stats_countries');
-        document.getElementById('stats_countries_label').textContent = i18next.t('stats_countries_label');
-        document.getElementById('stats_funds').textContent = i18next.t('stats_funds');
-        document.getElementById('stats_funds_label').textContent = i18next.t('stats_funds_label');
-        
-        // About section
-        document.getElementById('about_title').textContent = i18next.t('about_title');
-        document.getElementById('about_subtitle').textContent = i18next.t('about_subtitle');
-        document.getElementById('about_text').textContent = i18next.t('about_text');
-        document.getElementById('about_text_2').textContent = i18next.t('about_text_2');
-        
-        // Projects section
-        document.getElementById('projects_title').textContent = i18next.t('projects_title');
-        document.getElementById('projects_subtitle').textContent = i18next.t('projects_subtitle');
-        document.getElementById('project_1_title').textContent = i18next.t('project_1_title');
-        document.getElementById('project_1_desc').textContent = i18next.t('project_1_desc');
-        document.getElementById('project_2_title').textContent = i18next.t('project_2_title');
-        document.getElementById('project_2_desc').textContent = i18next.t('project_2_desc');
-        document.getElementById('project_3_title').textContent = i18next.t('project_3_title');
-        document.getElementById('project_3_desc').textContent = i18next.t('project_3_desc');
-        document.getElementById('project_button_1').textContent = i18next.t('project_button');
-        document.getElementById('project_button_2').textContent = i18next.t('project_button');
-        document.getElementById('project_button_3').textContent = i18next.t('project_button');
-        
-        // Impact section
-        document.getElementById('impact_title').textContent = i18next.t('impact_title');
-        document.getElementById('impact_subtitle').textContent = i18next.t('impact_subtitle');
-        document.getElementById('impact_1_title').textContent = i18next.t('impact_1_title');
-        document.getElementById('impact_1_text').textContent = i18next.t('impact_1_text');
-        document.getElementById('impact_2_title').textContent = i18next.t('impact_2_title');
-        document.getElementById('impact_2_text').textContent = i18next.t('impact_2_text');
-        document.getElementById('impact_3_title').textContent = i18next.t('impact_3_title');
-        document.getElementById('impact_3_text').textContent = i18next.t('impact_3_text');
-        
-        // Contact section
-        document.getElementById('contact_title').textContent = i18next.t('contact_title');
-        document.getElementById('contact_text').textContent = i18next.t('contact_text');
-        document.getElementById('contact_description').textContent = i18next.t('contact_description');
-        document.getElementById('contact_button').querySelector('.mdc-button__label').textContent = i18next.t('contact_button');
-        
-        // Footer
-        document.getElementById('footer_tagline').textContent = i18next.t('footer_tagline');
-        document.getElementById('footer_links').textContent = i18next.t('footer_links');
-        document.getElementById('footer_about').textContent = i18next.t('nav_about');
-        document.getElementById('footer_projects').textContent = i18next.t('nav_projects');
-        document.getElementById('footer_impact').textContent = i18next.t('nav_impact');
-        document.getElementById('footer_contact').textContent = i18next.t('nav_contact');
-        document.getElementById('footer_connect').textContent = i18next.t('footer_connect');
-        document.getElementById('footer_copyright').textContent = i18next.t('footer_copyright');
-        
-        // Update the document title
-        document.title = i18next.t('title');
+    // Helper function to translate an element by ID
+    function translateElement(id) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = i18next.t(id);
+        }
+    }
+
+    // Helper function to translate a button by ID
+    function translateButton(id) {
+        const button = document.getElementById(id);
+        if (button) {
+            const label = button.querySelector('.mdc-button__label');
+            if (label) {
+                label.textContent = i18next.t(id);
+            }
+        }
     }
     
     function changeLang(lng) {
-        i18next.changeLanguage(lng, function() {
+        i18next.changeLanguage(lng, function(err, t) {
+            if (err) {
+                console.error('Error changing language:', err);
+            }
             updateContent();
         });
     }
