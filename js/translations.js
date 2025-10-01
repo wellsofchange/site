@@ -157,11 +157,20 @@ document.addEventListener('DOMContentLoaded', function() {
             // Change language
             changeLang(lang);
 
-            // Update FAB display
+            // Update FAB display immediately for better UX
             document.getElementById('current-language-display').textContent = `${flag} ${this.querySelector('.mdc-button__label').textContent}`;
 
             // Close the menu
             languageMenu.classList.remove('open');
         });
     });
+
+    // Initialize the active language button based on default language ('en')
+    // (This avoids the i18next reference error by not using it directly)
+    const defaultLanguage = 'en';
+    const initialLangButton = document.querySelector(`.language-selector[data-lang="${defaultLanguage}"]`);
+    if (initialLangButton) {
+        initialLangButton.classList.remove('mdc-button--outlined');
+        initialLangButton.classList.add('mdc-button--raised');
+    }
 });
